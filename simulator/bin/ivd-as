@@ -44,7 +44,7 @@ def pad_instructions(insts : list[Instruction], pad :int) -> list[str]:
         if i < len(insts):
             instruction_binary[i] = str(insts[i].get_instruction().bin)
         else:
-            instruction_binary[i] = "0" * insts[0].get_instruction().length
+            instruction_binary[i] = "0" * len(insts[0].get_instruction())
     return instruction_binary
 
 def parse_args():
