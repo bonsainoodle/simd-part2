@@ -1,2 +1,6 @@
 simulator/__pycache__
 simulator/src/__pycache__
+__pycache__/
+*.py[cod]
+.venv/
+pyrightconfig.json
