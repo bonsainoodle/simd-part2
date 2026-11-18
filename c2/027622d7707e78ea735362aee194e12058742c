@@ -1,0 +1,19 @@
+.gitignore
+  s_60f60775e72f83::t_b8b872be2b2583 2-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c2027622d7707e78ea735362aee194e12058742c",
+  "prompts": {},
+  "sessions": {
+    "s_60f60775e72f83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9ba9307a-d3d5-4abb-a4de-d78d35956e02",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "bonsainoodle <3sprix.exe@gmail.com>"
+    }
+  }
+}
