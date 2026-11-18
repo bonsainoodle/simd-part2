@@ -1,0 +1,23 @@
+.python-version
+  s_60f60775e72f83::t_b8b872be2b2583 1
+pyproject.toml
+  s_60f60775e72f83::t_b8b872be2b2583 1-9
+uv.lock
+  s_60f60775e72f83::t_a40b0bba957e15 1-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e92ab703a4abab8b439368498401c3415ad8c072",
+  "prompts": {},
+  "sessions": {
+    "s_60f60775e72f83": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9ba9307a-d3d5-4abb-a4de-d78d35956e02",
+        "model": "claude-fable-5-2"
+      },
+      "human_author": "bonsainoodle <3sprix.exe@gmail.com>"
+    }
+  }
+}
