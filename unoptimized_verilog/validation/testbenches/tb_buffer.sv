@@ -110,12 +110,69 @@ module tb_buffer;
     `READ_LOAD_FILE("MEM1_FILE", mem1_file, `MEM1)
 
     // =========================================================================
+    // Checking the Read Data Against the Memory Contents
+    // =========================================================================
+    logic [`MEM0_BITWIDTH-1:0] exp_matrix_data;
+    logic [`MEM1_BITWIDTH-1:0] exp_vector_data;
+    logic [`MEM1_BITWIDTH-1:0] vector_word;
+    logic [`BUF_MEMB_OFFSET_BITWIDTH-1:0] memb_offset;
+    logic         read_seen = 0;
+    integer       checks    = 0;
+    integer       errors    = 0;
+
+    // Sample just before every rising clock edge
+    always @(negedge clk) begin
+        #(`CLK_PERIOD/2 - 1);
+        if (rst_n) begin
+
+            // The outputs must show the data of the last READ
+            if (read_seen) begin
+                checks = checks + 1;
+                if (dut.matrix_data !== exp_matrix_data) begin
+                    $display("[%0t] ERROR: matrix_data is %h, expected %h", $time, dut.matrix_data, exp_matrix_data);
+                    errors = errors + 1;
+                end
+                if (dut.vector_data !== exp_vector_data) begin
+                    $display("[%0t] ERROR: vector_data is %h, expected %h", $time, dut.vector_data, exp_vector_data);
+                    errors = errors + 1;
+                end
+            end
+
+            // Work out what the current READ should give next cycle
+            if (dut.buf_inst_valid && (dut.buf_inst.opcode == `BUF_READ)) begin
+                read_seen       = 1;
+                exp_matrix_data = `MEM0.data[dut.buf_inst.mema_offset];
+                memb_offset     = dut.buf_inst.memb_offset;
+                case (dut.buf_inst.mode)
+                    `MODE_INT8: begin
+                        vector_word     = `MEM1.data[memb_offset / 4] >> (8 * (memb_offset % 4));
+                        exp_vector_data = {4{vector_word[7:0]}};
+                    end
+                    `MODE_INT16: begin
+                        vector_word     = `MEM1.data[memb_offset / 2] >> (16 * (memb_offset % 2));
+                        exp_vector_data = {2{vector_word[15:0]}};
+                    end
+                    default: begin
+                        exp_vector_data = `MEM1.data[memb_offset];
+                    end
+                endcase
+            end
+        end
+    end
+
+    // =========================================================================
     // Determining Whether to End the Simulation
     // =========================================================================
     logic simulation_complete;
     assign simulation_complete = (dut.u_instruction_memory.program_counter == instruction_count) && ~dut.pe_inst_valid && ~dut.buf_inst_valid;
     always @(posedge simulation_complete) begin
         #(`CLK_PERIOD)
+        if (checks == 0) begin
+            $display("ERROR: No READ was checked");
+            errors = errors + 1;
+        end
+        if (errors == 0) $display("TEST PASSED: %0d cycles checked", checks);
+        else             $display("TEST FAILED: %0d errors", errors);
         $display("Computation Complete, Ending Simulation.");
         $assertkill();
         #2 $finish;
@@ -129,6 +186,7 @@ module tb_buffer;
             $display("[%0t] %m: TIMEOUT IS %0d.",$time, TIMEOUT);
             #(TIMEOUT)
             $display("[%0t] ERROR: Timeout!",$time);
+            $display("TEST FAILED: the simulation did not complete");
             end_simulation();
         end
     end

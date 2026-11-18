@@ -24,6 +24,20 @@ module top_buffer_wb(
     wire [`MEM0_BITWIDTH-1:0] matrix_data;
     wire [`MEM1_BITWIDTH-1:0] vector_data;
 
+    // Test data for the output memory. It changes every cycle so the
+    // testbench can tell on which cycle a write happened.
+    logic [31:0]               data_counter;
+    wire  [`MEM2_BITWIDTH-1:0] output_data;
+    assign output_data = {(`MEM2_BITWIDTH/32){data_counter}};
+
+    always_ff @(posedge clk, negedge rst_n) begin
+        if (rst_n == '0) begin
+            data_counter <= 32'hABCD0123;
+        end else begin
+            data_counter <= data_counter + 1'b1;
+        end
+    end
+
     // Instruction Memory
     instruction_memory u_instruction_memory (
         .clk(clk),
@@ -53,7 +67,7 @@ module top_buffer_wb(
         .buf_inst_valid(buf_inst_valid),
         .matrix_data(matrix_data),
         .vector_data(vector_data),
-        .output_data(32'hABCD0123)
+        .output_data(output_data)
     );
 
 endmodule

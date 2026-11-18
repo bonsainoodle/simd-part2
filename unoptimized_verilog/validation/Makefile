@@ -26,6 +26,7 @@ ASM_FILE=mat_mul.asm
 MEM0_CONFIG=mem0.bits
 MEM1_CONFIG=mem1.bits
 TEST:=not_pe_test
+MODE:=INT8
 
 
 
@@ -58,7 +59,7 @@ compile_sw:
 	mkdir -p $(SOFTWARE_DIR)
 	cd $(SOFTWARE_DIR) && $(MG) 10 5 -5 5 --out $(MATRIX)
 	cd $(SOFTWARE_DIR) && $(MG)  5 1 -5 5 --out $(VECTOR) --seed 12345
-	cd $(SOFTWARE_DIR) && $(CC) $(MATRIX) $(VECTOR) INT8 --out_mem0 $(MEM0_CONFIG) --out_mem1 $(MEM1_CONFIG) --out_asm $(ASM_FILE)
+	cd $(SOFTWARE_DIR) && $(CC) $(MATRIX) $(VECTOR) $(MODE) --out_mem0 $(MEM0_CONFIG) --out_mem1 $(MEM1_CONFIG) --out_asm $(ASM_FILE)
 	cd $(SOFTWARE_DIR) && $(AS) $(ASM_FILE) --out $(INSTRUCTIONS)
 endif
 
